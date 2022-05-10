@@ -4,12 +4,12 @@ const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const WPAPI = require("wpapi");
 const wp = new WPAPI({
   endpoint: process.env.ENDPOINT,
-  username: process.env.USERNAME,
+  username: process.env.USER_NAME,
   password: process.env.PASSWORD,
 });
 
 let exclude = process.env.DATE;
-async function checkThumbnails() {
+function checkThumbnails() {
   let url = `${process.env.CHECKURL + process.env.MODE + exclude}`;
   fetch(url)
     .then((response) => response.json())
@@ -18,7 +18,13 @@ async function checkThumbnails() {
         if (!data[i]._embedded["wp:featuredmedia"]) {
           return console.log("work done");
         } else {
-          if (!UrlExists(data[i]._embedded["wp:featuredmedia"][0].source_url)) {
+          //   if (!UrlExists(data[i]._embedded["wp:featuredmedia"][0].source_url)) {
+          if (
+            !UrlExists(
+              data[i]._embedded["wp:featuredmedia"][0].media_details.sizes
+                .wpscript_thumb_admin.source_url,
+            )
+          ) {
             wp.posts()
               .id(data[i].id)
               .delete()
@@ -31,6 +37,10 @@ async function checkThumbnails() {
           } else {
             exclude = data[i].date;
             console.log("ok " + data[i].id);
+            // console.log(
+            //   data[i]._embedded["wp:featuredmedia"][0].media_details.sizes
+            //     .wpscript_thumb_admin.source_url,
+            // );
           }
         }
       }
@@ -38,11 +48,11 @@ async function checkThumbnails() {
     });
 }
 
-async function UrlExists(url) {
+function UrlExists(url) {
   let http = new XMLHttpRequest();
   http.open("HEAD", url, false);
   http.send();
-  if (http.status != 404) return true;
+  if (http.status !== 404) return true;
   else return false;
 }
 
