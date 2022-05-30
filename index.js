@@ -18,13 +18,13 @@ function checkThumbnails() {
         if (!data[i]._embedded["wp:featuredmedia"]) {
           return console.log("work done");
         } else {
-          //   if (!UrlExists(data[i]._embedded["wp:featuredmedia"][0].source_url)) {
-          if (
-            !UrlExists(
-              data[i]._embedded["wp:featuredmedia"][0].media_details.sizes
-                .wpscript_thumb_admin.source_url,
-            )
-          ) {
+          if (!UrlExists(data[i]._embedded["wp:featuredmedia"][0].source_url)) {
+            // if (
+            //   !UrlExists(
+            //     data[i]._embedded["wp:featuredmedia"][0].media_details.sizes
+            //       .wpscript_thumb_admin.source_url,
+            //   )
+            // ) {
             wp.posts()
               .id(data[i].id)
               .delete()
